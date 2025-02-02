@@ -440,6 +440,7 @@ function updateProgressUI() {
         progressBar.style.width = `${progressPercent}%`;
         progressHandle.style.left = `${progressPercent}%`;
         currentTimeDisplay.innerText = formatTime(audioPlayer.currentTime);
+        endTimeDisplay.innerText = formatTime(audioPlayer.duration);
     }
 }
 
@@ -453,6 +454,7 @@ function setProgress(event) {
     if (isFinite(duration) && duration > 0) {
         const newTime = (clickX / width) * duration;
         audioPlayer.currentTime = newTime;
+        endTimeDisplay.innerText = formatTime(audioPlayer.duration);
         updateProgressUI();
     }
 }
@@ -476,6 +478,7 @@ function dragProgress(event) {
     progressBar.style.width = `${(moveX / width) * 100}%`;
     progressHandle.style.left = `${(moveX / width) * 100}%`;
     currentTimeDisplay.innerText = formatTime(newTime);
+    endTimeDisplay.innerText = formatTime(audioPlayer.duration);
 }
 
 function stopDragging() {
