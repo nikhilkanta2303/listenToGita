@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listen to Gita</title>
+    <link rel="icon" href="artwork.png" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+       /* Bhagavad Gita Themed Music Player */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #0b0033, #370031); /* Dark spiritual theme */
+    color: #eaf27c; /* Light golden-yellow text */
+    font-family: 'Garamond', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    flex-direction: column;
+    transition: all 0.5s ease-in-out;
+}
+
+/* Music Player Container */
+#app {
+    width: 400px;
+    background: #832232; /* Deep red */
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 1s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Equalizer animation */
+.equalizer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.equalizer-bar {
+    width: 5px;
+    height: 20px;
+    background: #ce8964; /* Warm saffron-like tone */
+    margin: 0 2px;
+    border-radius: 2px;
+    animation: equalizer-animation 1s linear infinite;
+}
+
+.equalizer-bar:nth-child(odd) {
+    animation-delay: 0.2s;
+}
+
+.equalizer-bar:nth-child(even) {
+    animation-delay: 0.4s;
+}
+
+@keyframes equalizer-animation {
+    0% { height: 20px; }
+    50% { height: 35px; }
+    100% { height: 20px; }
+}
+
+/* Album Art */
+#album-art-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #ce8964;
+    margin: 10px auto;
+    background: #832232;
+    position: relative;
+}
+
+#album-art {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #832232;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Song Title */
+h2 {
+    margin: 10px 0;
+    font-size: 20px;
+    color: #eaf27c; /* Light golden-yellow */
+}
+
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: #ce8964;
+    position: relative;
+    cursor: pointer;
+    margin: 10px 0;
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: #8d6e63;
+    position: relative;
+    cursor: pointer;
+    margin: 10px 0;
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+.progress-bar {
+    width: 0;
+    height: 6px;
+    background: #ff9800;
+    position: absolute;
+    border-radius: 3px;
+    transition: width 0.3s ease-in-out;
+}
+
+/* Draggable Progress Handle */
+.progress-handle {
+    width: 12px;
+    height: 12px;
+    background: #ffcc80;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    transition: transform 0.2s ease-in-out;
+}
+
+.progress-handle:active {
+    cursor: grabbing;
+    transform: scale(1.2) translate(-50%, -50%);
+}
+
+
+/* Time Display */
+.time-display {
+    color: #fff;
+    font-size: 14px;
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: #eaf27c; /* Golden */
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Track List */
+.track-list {
+    margin-top: 15px;
+    width: 400px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #370031; /* Darker accent */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.track {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #832232;
+    transition: background 0.3s;
+    color: #eaf27c;
+}
+
+.track:hover {
+    background: #ce8964;
+    color: #370031;
+}
+
+.track .duration {
+    font-size: 12px;
+    color: #eaf27c;
+}
+
+/* Volume Controls */
+.volume-controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Volume Slider */
+.volume-slider {
+    width: 200px;
+    margin-right: 10px;
+    cursor: pointer;
+    background: #ce8964;
+    border-radius: 5px;
+    height: 8px;
+    transition: all 0.3s ease-in-out;
+}
+.volume-handle {
+    width: 12px;
+    height: 12px;
+    background: #ffcc80;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    transition: transform 0.2s ease-in-out;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    background: #eaf27c; /* Light golden */
+    border-radius: 50%;
+    border: 2px solid #832232;
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+    background: #ce8964;
+    height: 8px;
+    border-radius: 5px;
+}
+
+.volume-percentage {
+    font-size: 14px;
+    color: #eaf27c;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Play/Pause Button Animation */
+.play-pause-btn {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    #app {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .control-btn {
+        font-size: 20px;
+    }
+
+    .progress-container {
+        height: 4px;
+    }
+
+    .volume-slider {
+        width: 70%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <h5>Listen to Gita</h5>
+    <h2><strong>Srimad Bhagavad Gita</strong></h2>
+    <div id="app">
+        <div id="album-art-container">
+            <div class="equalizer">
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+            </div>
+            <div id="album-art"><img src="artwork.png" alt="" style="width: 100%;border-radius: 5rem;"></div>
+        </div>
+        <h2 id="current-song">Select a Song</h2>
+        <div class="progress-container" onclick="setProgress(event)">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">0:00</span>
+            <span id="end-time">0:00</span>
+        </div>
+        <div class="controls">
+            <button class="control-btn" onclick="prevSong()">⏮</button>
+            <button class="control-btn play-pause-btn" id="playPauseBtn" onclick="togglePlay()">Play</button>
+            <button class="control-btn" onclick="nextSong()">⏭</button>
+        </div>
+        <audio id="audio-player"></audio>
+
+        <!-- Volume Controls -->
+        <div class="volume-controls">
+            <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="1" onchange="setVolume()">
+            <span id="volume-percentage" class="volume-percentage">100%</span>
+        </div>
+    </div>
+    <h3>Choose among these chapters(prasthavana is not a chapter)</h3>
+    <div class="track-list" id="track-list"></div>
+    
+    <script>
+        let songs = [
+            "00_Prastavana-1", "00_Prastavana-2", "00_Prastavana-3", "01_Arjunavishadhayogam", "02_Sankhyayogam", 
+            "03_Karmaprasamsayogam", "04_Gnanakarma_samnyaasayogam", "05_Samnyasayogam", "06_Dhyanayogam", "07_Gnanavignanayogam", 
+            "07_Gnanavignanayogam", "08_Tharakabrahmayogam", "09_Rajavidhyarajaguhyayogam", "10_Vibhuthiyogam", "11_Viswaroopadharshanayogum", 
+            "12_Bhakthiyogam", "13_Kshetrakshetrajnyayogam", "14_Gunathrayavibhaagam", "15_Purushoththamayogam", "16_Daivaasurasampadvibhaagayogam",
+            "17_Sradhdhatreyavibhagayogam","18_Mokshasannyasayogam"
+        ];
+
+        let currentIndex = 0;
+        const audioPlayer = document.getElementById('audio-player');
+        const progressBar = document.querySelector('.progress-bar');
+        const songTitle = document.getElementById('current-song');
+        const trackList = document.getElementById('track-list');
+        const currentTimeDisplay = document.getElementById('current-time');
+        const endTimeDisplay = document.getElementById('end-time');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumePercentage = document.getElementById('volume-percentage');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function loadSong(index) {
+            songTitle.innerText = songs[index];
+            audioPlayer.src = `src/${songs[index]}.mp3`;
+            audioPlayer.load();
+            audioPlayer.onloadedmetadata = function() {
+                // Dynamically show the track duration in the list
+                const duration = formatTime(audioPlayer.duration);
+                const trackItem = trackList.children[index];
+                trackItem.querySelector('.duration').innerText = duration;
+            }
+        }
+        audioPlayer.onplay = () => {
+            playPauseBtn.innerText = 'Pause';
+        };
+
+        audioPlayer.onpause = () => {
+            playPauseBtn.innerText = 'Play';
+        };
+
+        function togglePlay() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playPauseBtn.innerText = 'Pause'; // Switch to Pause
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.innerText = 'Play'; // Switch to Play
+            }
+        }
+
+        function prevSong() {
+            currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+            loadSong(currentIndex);
+            audioPlayer.play();
+        }
+
+        function nextSong() {
+            currentIndex = (currentIndex + 1) % songs.length;
+            loadSong(currentIndex);
+            audioPlayer.play();
+        }
+
+        function setProgress(event) {
+    const progressContainer = document.querySelector('.progress-container');
+    const width = progressContainer.clientWidth;
+    const clickX = event.clientX - progressContainer.getBoundingClientRect().left;
+    const duration = audioPlayer.duration;
+
+    if (isFinite(duration) && duration > 0) {
+        const newTime = (clickX / width) * duration;
+        audioPlayer.currentTime = newTime;
+    }
+}
+
+
+        function setVolume() {
+            const volume = volumeSlider.value;
+            audioPlayer.volume = volume;
+            volumePercentage.innerText = `${Math.round(volume * 100)}%`;
+        }
+
+        audioPlayer.ontimeupdate = () => {
+            if (isFinite(audioPlayer.duration)) {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+
+                currentTimeDisplay.innerText = formatTime(audioPlayer.currentTime);
+                endTimeDisplay.innerText = formatTime(audioPlayer.duration);
+            }
+        };
+        // =========================
+        const progressContainer = document.querySelector('.progress-container');
+const progressHandle = document.createElement('div');
+progressHandle.classList.add('progress-handle');
+progressContainer.appendChild(progressHandle);
+
+let isDragging = false;
+
+function updateProgressUI() {
+    if (!isDragging) {
+        const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+        progressHandle.style.left = `${progressPercent}%`;
+        currentTimeDisplay.innerText = formatTime(audioPlayer.currentTime);
+    }
+}
+
+audioPlayer.ontimeupdate = updateProgressUI;
+
+function setProgress(event) {
+    const width = progressContainer.clientWidth;
+    const clickX = event.clientX - progressContainer.getBoundingClientRect().left;
+    const duration = audioPlayer.duration;
+
+    if (isFinite(duration) && duration > 0) {
+        const newTime = (clickX / width) * duration;
+        audioPlayer.currentTime = newTime;
+        updateProgressUI();
+    }
+}
+
+// Handle Dragging
+progressHandle.addEventListener('mousedown', (event) => {
+    isDragging = true;
+    document.addEventListener('mousemove', dragProgress);
+    document.addEventListener('mouseup', stopDragging);
+});
+
+function dragProgress(event) {
+    if (!isDragging) return;
+
+    const width = progressContainer.clientWidth;
+    let moveX = event.clientX - progressContainer.getBoundingClientRect().left;
+    moveX = Math.max(0, Math.min(width, moveX)); // Ensure it stays within bounds
+
+    const newTime = (moveX / width) * audioPlayer.duration;
+    audioPlayer.currentTime = newTime;
+    progressBar.style.width = `${(moveX / width) * 100}%`;
+    progressHandle.style.left = `${(moveX / width) * 100}%`;
+    currentTimeDisplay.innerText = formatTime(newTime);
+}
+
+function stopDragging() {
+    isDragging = false;
+    document.removeEventListener('mousemove', dragProgress);
+    document.removeEventListener('mouseup', stopDragging);
+}
+
+        // =========================
+        function renderTrackList() {
+            trackList.innerHTML = '';
+            songs.forEach((song, index) => {
+                const trackItem = document.createElement('div');
+                trackItem.classList.add('track');
+                trackItem.innerHTML = `${song}`;
+                trackItem.onclick = () => {
+                    currentIndex = index;
+                    loadSong(currentIndex);
+                    audioPlayer.play();
+                };
+                trackList.appendChild(trackItem);
+            });
+        }
+
+        renderTrackList();
+        loadSong(currentIndex);
+
+        // =====================================
+        if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: "Bhagavad Gita",
+        artist: "Unknown",
+        album: "Spiritual Series",
+        artwork: [
+            { src: "artwork.png", sizes: "512x512", type: "image/png" }
+        ]
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => {
+        audioPlayer.play();
+    });
+
+    navigator.mediaSession.setActionHandler("pause", () => {
+        audioPlayer.pause();
+    });
+
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+        prevSong();
+    });
+
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+        nextSong();
+    });
+}
+self.addEventListener("install", (event) => {
+    console.log("Service Worker Installed");
+});
+
+self.addEventListener("activate", (event) => {
+    console.log("Service Worker Activated");
+});
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js").then(() => {
+        console.log("Service Worker Registered!");
+    });
+}
+
+        // =====================================
+    </script>
+    <footer>🙏🙏🙏 Thappulu emaina untey ksaminchali 🙏🙏🙏</footer>
+</body>
+</html>
