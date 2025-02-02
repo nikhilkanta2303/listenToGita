@@ -9,11 +9,11 @@
 
     <style>
        /* Bhagavad Gita Themed Music Player */
-body {
+       body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(to right, #0b0033, #370031); /* Dark spiritual theme */
-    color: #eaf27c; /* Light golden-yellow text */
+    background: linear-gradient(to right, #0b0033, #370031);
+    color: #eaf27c;
     font-family: 'Garamond', serif;
     display: flex;
     justify-content: center;
@@ -22,12 +22,13 @@ body {
     overflow: hidden;
     flex-direction: column;
     transition: all 0.5s ease-in-out;
+    text-align: center;
 }
 
 /* Music Player Container */
 #app {
     width: 400px;
-    background: #832232; /* Deep red */
+    background: #832232;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
@@ -40,7 +41,6 @@ body {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 /* Equalizer animation */
 .equalizer {
     position: absolute;
@@ -190,7 +190,7 @@ h2 {
     width: 400px;
     max-height: 200px;
     overflow-y: auto;
-    background: #370031; /* Darker accent */
+    background: #370031;
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -223,7 +223,6 @@ h2 {
     justify-content: center;
 }
 
-/* Volume Slider */
 .volume-slider {
     width: 200px;
     margin-right: 10px;
@@ -274,29 +273,59 @@ h2 {
 /* Responsive Design */
 @media (max-width: 600px) {
     #app {
-        width: 90%;
+        width: 80%;
         padding: 15px;
+        margin-bottom: 20px;  /* Create space between player and track list */
     }
-
-    .control-btn {
-        font-size: 20px;
+    .track-list {
+        width: 85%;
+        margin-top: 10px;
     }
-
+    .controls {
+        gap: 15px;
+    }
     .progress-container {
         height: 4px;
     }
-
     .volume-slider {
         width: 70%;
     }
 }
 
+
+
+@media (min-width: 601px) {
+    body {
+        flex-direction: row;  /* Align items side by side on larger screens */
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    #app {
+        height: 47%;
+        width: 55%; /* Adjust width of the player */
+        margin-right: 20px;
+        margin-left: 30px; /* Add spacing between player and track list */
+    }
+
+    .track-list {
+        width: 60%;
+        max-height: 50%;
+        margin-right: 30px;
+    }
+    footer{
+        flex-direction: column;
+    }
+}
+
+
     </style>
 </head>
 <body>
-    <center><p>Listen to Gita</p></center>
-    <h3><center><strong>Srimad Bhagavad Gita</strong></center></h3>
+    
+    
     <div id="app">
+        <h2><strong>Srimad Bhagavad Gita</strong></h2>
         <div id="album-art-container">
             <div class="equalizer">
                 <div class="equalizer-bar"></div>
@@ -328,7 +357,7 @@ h2 {
             <span id="volume-percentage" class="volume-percentage">100%</span>
         </div>
     </div>
-    <center><h5>Choose among these chapters(prasthavana is not a chapter)</h5></center>
+    <p>Choose among these chapters(prasthavana is not a chapter)<br><br><br>🙏🙏🙏 Thappulu emaina untey ksaminchali 🙏🙏🙏</p>
     <div class="track-list" id="track-list"></div>
     
     <script>
@@ -549,6 +578,5 @@ if ("serviceWorker" in navigator) {
 
         // =====================================
     </script>
-    <center><footer>🙏🙏🙏 Thappulu emaina untey ksaminchali 🙏🙏🙏</footer></center>
 </body>
 </html>
